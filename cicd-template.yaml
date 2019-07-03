@@ -282,7 +282,7 @@ objects:
           - -c
           - |           
             # adjust jenkins 
-            oc set resources dc/jenkins --limits=cpu=2,memory=2Gi --requests=cpu=100m,memory=512Mi 
+            oc set resources dc/jenkins --limits=cpu=2,memory=6Gi --requests=cpu=1000m,memory=4Gi 
             oc label dc jenkins app=jenkins --overwrite 
 
             # setup dev env
@@ -372,12 +372,12 @@ objects:
             fi
 
             if [ "${EPHEMERAL}" == "true" ] ; then
-              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=2Gi
+              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=4Gi
             else
-              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=2Gi
+              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=4Gi
             fi
 
-            oc set resources dc/nexus --requests=cpu=200m,memory=1Gi --limits=cpu=2,memory=4Gi 
+            oc set resources dc/nexus --requests=cpu=6000m,memory=6Gi --limits=cpu=8,memory=8Gi 
 
             GOGS_SVC=$(oc get svc gogs -o template --template='{{.spec.clusterIP}}')
             GOGS_USER=gogs

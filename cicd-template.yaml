@@ -357,7 +357,8 @@ objects:
             if [ "${EPHEMERAL}" == "true" ] ; then
               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
             else
-              oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml \
+              #oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml \
+              oc new-app -f https://raw.githubusercontent.com/mgamarra/openshift-cd-demo/ocp-3.11/sonarqube-persistent-template.yml \
               --param=SONARQUBE_MEMORY_INITIAL=6Gi \
               --param=SONARQUBE_MEMORY_LIMIT=6Gi \
               --param=SONARQUBE_CPU_INITIAL=4000m

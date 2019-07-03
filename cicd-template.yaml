@@ -352,7 +352,11 @@ objects:
             
             sleep 5
 
-            oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
+            if [ "${EPHEMERAL}" == "true" ] ; then
+              oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
+            else
+              oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
+            fi
 
             if [ "${DEPLOY_CHE}" == "true" ] ; then
               oc process -f https://raw.githubusercontent.com/minishift/minishift/master/addons/che/templates/che-workspace-service-account.yaml \

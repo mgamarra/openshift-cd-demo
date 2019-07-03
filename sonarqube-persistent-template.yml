@@ -409,7 +409,7 @@ parameters:
   - name: SONARQUBE_CPU_INITIAL
     description: SonarQube Container CPU initial
     displayName: SonarQube Container CPU initial
-    value: "1000m"
+    value: "1"
   - name: SONARQUBE_CPU_LIMIT
     description: SonarQube Container CPU limit
     displayName: SonarQube Container CPU limit

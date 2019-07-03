@@ -347,7 +347,9 @@ objects:
               oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/gogs-openshift-docker/master/openshift/gogs-persistent-template.yaml \
                   --param=GOGS_VERSION=0.11.34 \
                   --param=HOSTNAME=$GOGS_HOSTNAME \
-                  --param=SKIP_TLS_VERIFY=true
+                  --param=SKIP_TLS_VERIFY=true \
+                  --param=GOGS_VOLUME_CAPACITY=10Gi \
+                  --param=DB_VOLUME_CAPACITY=10Gi \
             fi
             
             sleep 5
@@ -355,8 +357,18 @@ objects:
             if [ "${EPHEMERAL}" == "true" ] ; then
               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
             else
-              oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
+              oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml \
+              --param=SONARQUBE_MEMORY_LIMIT=6Gi \
+              --param=SONARQUBE_PERSISTENT_VOLUME_SIZE=10Gi \
+              --param=POSTGRES_PERSISTENT_VOLUME_CLAIM_SIZE=10Gi \
+              --param=POSTGRES_CONTAINER_MEMORY_SIZE_LIMIT=6Gi \
+              --param=POSTGRES_CONTAINER_CPU_LIMIT=2 \
+              --param=SONARQUBE_CPU_LIMIT=2 \
+              --param=POSTGRES_CONTAINER_MEMORY_SIZE_LIMIT=2
+              
             fi
+            
+            sleep 5
 
             if [ "${DEPLOY_CHE}" == "true" ] ; then
               oc process -f https://raw.githubusercontent.com/minishift/minishift/master/addons/che/templates/che-workspace-service-account.yaml \
@@ -374,7 +386,10 @@ objects:
             if [ "${EPHEMERAL}" == "true" ] ; then
               oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=4Gi --param=VOLUME_CAPACITY=50Gi
             else
-              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=4Gi --param=VOLUME_CAPACITY=50Gi
+              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml \
+              --param=NEXUS_VERSION=3.15.0 \
+              --param=MAX_MEMORY=4Gi \
+              --param=VOLUME_CAPACITY=50Gi
             fi
 
             oc set resources dc/nexus --requests=cpu=6000m,memory=6Gi --limits=cpu=8,memory=8Gi 

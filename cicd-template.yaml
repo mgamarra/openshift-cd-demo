@@ -361,7 +361,7 @@ objects:
               #oc new-app -f https://raw.githubusercontent.com/mgamarra/openshift-cd-demo/ocp-3.11/sonarqube-persistent-template.yml \
               --param=SONARQUBE_MEMORY_INITIAL=6Gi \
               --param=SONARQUBE_MEMORY_LIMIT=6Gi \
-              --param=SONARQUBE_CPU_INITIAL=1
+              --param=SONARQUBE_CPU_INITIAL=4 \
               --param=SONARQUBE_CPU_LIMIT=6 \
               --param=SONARQUBE_PERSISTENT_VOLUME_SIZE=10Gi \
               --param=POSTGRES_CONTAINER_MEMORY_SIZE_INITIAL=2Gi \

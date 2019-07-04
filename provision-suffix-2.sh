@@ -145,9 +145,9 @@ PRJ_SUFFIX=${ARG_PROJECT_SUFFIX:-`echo $OPENSHIFT_USER | sed -e 's/[-@].*//g'`}
 GITHUB_ACCOUNT=${GITHUB_ACCOUNT:-mgamarra}
 GITHUB_REF=${GITHUB_REF:-ocp-3.11}
 
-VAR_CICD_PROJECT='citinova-devops-tools-3'
-VAR_DEV_PROJECT='citinova-devops-app-dev-3' 
-VAR_STAGE_PROJECT='citinova-devops-app-hom-3'
+VAR_CICD_PROJECT='citinova-devops-tools'
+VAR_DEV_PROJECT='citinova-devops-app-dev' 
+VAR_STAGE_PROJECT='citinova-devops-app-hom'
 
 function deploy() {
   oc adm $ARG_OC_OPS new-project $VAR_DEV_PROJECT   --node-selector="env=citinova" --display-name=$VAR_DEV_PROJECT

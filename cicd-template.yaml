@@ -357,9 +357,15 @@ objects:
             if [ "${EPHEMERAL}" == "true" ] ; then
               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
             else
-               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
+               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml \
+               --param=POSTGRES_PERSISTENT_VOLUME_CLAIM_SIZE=2Gi \
+               --param=POSTGRES_CONTAINER_MEMORY_SIZE_LIMIT=6Gi \
+               --param=POSTGRES_CONTAINER_CPU_LIMIT=4 \
+               --param=SONARQUBE_PERSISTENT_VOLUME_SIZE=2Gi \
+               --param=SONARQUBE_MEMORY_LIMIT=6Gi \
+               --param=SONARQUBE_CPU_LIMIT=4 
             fi
-            
+ 
             sleep 5      
             
             oc set resources dc/sonardb --requests=cpu=2000m,memory=2Gi --limits=cpu=4,memory=4Gi 

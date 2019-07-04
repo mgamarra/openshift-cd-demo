@@ -358,8 +358,8 @@ objects:
               oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
             else
                oc new-app -f https://raw.githubusercontent.com/siamaksade/sonarqube/master/sonarqube-persistent-template.yml --param=SONARQUBE_MEMORY_LIMIT=6Gi
-             
             fi
+            
             sleep 5      
             
             oc set resources dc/sonardb --requests=cpu=2000m,memory=2Gi --limits=cpu=4,memory=4Gi 

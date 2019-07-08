@@ -383,8 +383,8 @@ objects:
               --param=MAX_MEMORY=4Gi \
               --param=VOLUME_CAPACITY=50Gi
             fi
-            sleep 5      
-            oc set resources dc/nexus --requests=cpu=2000m,memory=2Gi --limits=cpu=4,memory=4Gi 
+
+            oc set resources dc/nexus --requests=cpu=200m,memory=1Gi --limits=cpu=2,memory=4Gi 
 
             GOGS_SVC=$(oc get svc gogs -o template --template='{{.spec.clusterIP}}')
             GOGS_USER=gogs

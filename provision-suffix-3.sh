@@ -142,12 +142,12 @@ done
 LOGGEDIN_USER=$(oc $ARG_OC_OPS whoami)
 OPENSHIFT_USER=${ARG_USERNAME:-$LOGGEDIN_USER}
 PRJ_SUFFIX=${ARG_PROJECT_SUFFIX:-`echo $OPENSHIFT_USER | sed -e 's/[-@].*//g'`}
-GITHUB_ACCOUNT=${GITHUB_ACCOUNT:-mgamarra}
+GITHUB_ACCOUNT=${GITHUB_ACCOUNT:-siamaksade}
 GITHUB_REF=${GITHUB_REF:-ocp-3.11}
 
-VAR_CICD_PROJECT='citinova-devops-tools'
-VAR_DEV_PROJECT='citinova-devops-app-dev' 
-VAR_STAGE_PROJECT='citinova-devops-app-hom'
+VAR_CICD_PROJECT='citinova-devops-tools-3'
+VAR_DEV_PROJECT='citinova-devops-app-dev-3' 
+VAR_STAGE_PROJECT='citinova-devops-app-hom-3'
 
 function deploy() {
   oc adm $ARG_OC_OPS new-project $VAR_DEV_PROJECT   --node-selector="env=citinova" --display-name=$VAR_DEV_PROJECT

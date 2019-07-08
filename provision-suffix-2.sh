@@ -188,7 +188,7 @@ function deploy() {
   echo "Using template $template"
   oc $ARG_OC_OPS new-app -f $template -p DEV_PROJECT=$VAR_DEV_PROJECT -p STAGE_PROJECT=$VAR_STAGE_PROJECT -p DEPLOY_CHE=$ARG_DEPLOY_CHE -p EPHEMERAL=$ARG_EPHEMERAL -p ENABLE_QUAY=$ARG_ENABLE_QUAY -p QUAY_USERNAME=$ARG_QUAY_USER -p QUAY_PASSWORD=$ARG_QUAY_PASS -n $VAR_CICD_PROJECT 
   
-
+sleep 5
 oc set resources dc/nexus --requests=cpu=4000m,memory=6Gi --limits=cpu=6,memory=6Gi  -n $VAR_CICD_PROJECT
 oc set probe dc/nexus --remove --readiness --liveness  -n $VAR_CICD_PROJECT
 

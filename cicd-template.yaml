@@ -390,7 +390,7 @@ objects:
               oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-template.yaml --param=NEXUS_VERSION=3.15.0 --param=MAX_MEMORY=4Gi --param=VOLUME_CAPACITY=50Gi
             else
               oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml \
-              --param=NEXUS_VERSION=3.15.0 \
+              --param=NEXUS_VERSION=3.17.0 \
               --param=MAX_MEMORY=4Gi \
               --param=VOLUME_CAPACITY=50Gi
             fi

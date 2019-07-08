@@ -180,7 +180,7 @@ function deploy() {
   sleep 2
 
   oc new-app jenkins-ephemeral -n $VAR_CICD_PROJECT
-  
+  #oc new-app jenkins -n $VAR_CICD_PROJECT
 
   sleep 2
 

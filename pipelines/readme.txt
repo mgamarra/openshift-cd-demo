@@ -33,6 +33,11 @@ oc get --export bc  -o yaml -n citinova-devops-tools gitlab-pipeline > gitlab-pi
 oc delete bc -n citinova-devops-tools gitlab-pipeline
 oc create -f gitlab-pipeline.yaml -n citinova-devops-tools
 
+oc create -f gitlab-pipeline-2.yaml -n citinova-devops-tools
+
+#oc create -f vipro2-template.json -n citinova-test-openshift-dev
+#oc export -o yaml --as-template=sefazce-vipro2 > sefazce-vipro2.yaml -n citinova-test-openshift-dev
+
 #oc secrets new-basicauth gitlabsecret --username=citinovadev@gmail.com --password=Citinova342
 #oc label secret gitlabsecret credential.sync.jenkins.openshift.io=true
 #oc secrets link builder gitlabsecret

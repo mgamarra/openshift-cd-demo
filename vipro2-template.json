@@ -1,0 +1,504 @@
+{
+  "apiVersion": "v1",
+  "kind": "Template",
+  "metadata": {
+    "annotations": {
+      "displayName": "SEFAZ-CE Vipro 2",
+      "description": "Template para serviços VIPRO 2. Antes de iniciar o deploy crie os Config Maps e Secrets que serão utilizados pela aplicação.",
+      "openshift.io/long-description": "Este template define as configurações necessárias para o deploy dos microserviços do Vipro2",
+      "tags": "sefaz,sefazce,vipro,java,springboot,fis",
+      "iconClass": "pficon-process-automation",
+      "version": "2.0",
+      "openshift.io/generated-by": "RedHatConsultingTeam",
+      "openshift.io/provider-display-name": "SEFAZ-CE" 
+    },
+    "name": "sefazce-vipro2"
+  },
+  "message" : "Provisionando aplicação '${APP_NAME}'.",
+  "labels": {
+    "template": "sefazce-vipro2"
+  },
+  "parameters": [
+    {
+      "name": "APP_NAME",
+      "displayName": "Application Name",
+      "required": true,
+      "value": "assinatura-digital",
+      "description": "The name assigned to the application."
+    },
+    {
+      "name": "GIT_REPO",
+      "displayName": "Git Repository URL",
+      "required": true,
+      "value": "http://gitlab.ic.sefaz.ce.gov.br/vipro/vipro2/fontes/assinatura-digital.git",
+      "description": "The URL of the repository with your application source code."
+    },
+    {
+      "name": "GIT_REF",
+      "displayName": "Git Reference",
+      "value": "develop",
+      "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch."
+    },
+    {
+      "name": "GIT_SOURCE_SECRET",
+      "displayName": "Source Secret",
+      "required": true,
+      "value": "gitlab-sefazce",
+      "description": "Secret with credentials for pulling your source code. (See)[https://docs.openshift.org/latest/dev_guide/builds/build_inputs.html#source-clone-secrets]"
+    },
+    {
+      "name": "BUILDER_VERSION",
+      "displayName": "Builder version",
+      "value": "2.0",
+      "description": "The version of the FIS S2I builder image to use."
+    },
+    {
+      "name": "APP_VERSION",
+      "displayName": "Application Version",
+      "value": "1.0.0-SNAPSHOT",
+      "description": "The application version."
+    },
+    {
+      "name": "MAVEN_ARGS",
+      "displayName": "Maven Arguments",
+      "value": "package -DskipTests -Dfabric8.skip -e -B",
+      "description": "Arguments passed to mvn in the build."
+    },
+    {
+      "name": "MAVEN_ARGS_APPEND",
+      "displayName": "Extra Maven Arguments",
+      "description": "Extra arguments passed to mvn, e.g. for multi-module builds."
+    },
+    {
+      "name": "IMAGE_STREAM_NAMESPACE",
+      "displayName": "Image Stream Namespace",
+      "value": "openshift",
+      "required": true,
+      "description": "Namespace in which the Fuse ImageStreams are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project."
+    },
+    {
+      "name": "BUILD_SECRET",
+      "displayName": "Git Build Secret",
+      "generate": "expression",
+      "description": "The secret needed to trigger a build.",
+      "from": "[a-zA-Z0-9]{32}"
+    },
+    {
+      "name": "DB_SECRET",
+      "displayName": "Database Secret",
+      "value": "vipro2-postgresql-secret",
+      "required": true,
+      "description": "The secret needed to database connection."
+    },  
+    {
+      "name": "CPU_REQUEST",
+      "displayName": "CPU request",
+      "value": "0.2",
+      "required": true,
+      "description": "The amount of CPU to requests."
+    },
+    {
+      "name": "CPU_LIMIT",
+      "displayName": "CPU limit",
+      "value": "0.5",
+      "required": true,
+      "description": "The amount of CPU the container is limited to use."
+    },  
+    {
+      "name": "RAM_REQUEST",
+      "displayName": "RAM request",
+      "value": "256Mi",
+      "required": true,
+      "description": "The amount of RAM to requests."
+    },
+    {
+      "name": "RAM_LIMIT",
+      "displayName": "RAM limit",
+      "value": "512Mi",
+      "required": true,
+      "description": "The amount of RAM the container is limited to use."
+    },
+    {
+      "name": "HTTP_PROXY",
+      "displayName": "Http proxy",
+      "value": "",
+      "description": "Http proxy configuration for pods. Format 'http://<username>:<password>@<hostname>:<port>'"
+    },
+    {
+      "name": "HTTPS_PROXY",
+      "displayName": "Https proxy",
+      "value": "",
+      "description": "Https proxy configuration for pods. Format 'http://<username>:<password>@<hostname>:<port>'"
+    },
+    {
+      "name": "NO_PROXY",
+      "displayName": "No proxy hosts",
+      "value": "",
+      "description": "No proxy hosts configuration for pods. Format 'master.hostname.example.com,10.1.0.0/16,172.30.0.0/16'"
+    }
+  ],
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}",
+          "openshift.io/generated-by": "RedHatConsultingTeam"
+        }
+      },
+      "spec": {},
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}",
+          "openshift.io/generated-by": "RedHatConsultingTeam"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "GitLab",
+            "gitlab": {
+              "secret": "${BUILD_SECRET}"
+            }
+          },
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${GIT_REPO}",
+            "ref": "${GIT_REF}"
+          },
+          "sourceSecret": {
+              "name": "${GIT_SOURCE_SECRET}"
+          },
+          "configMaps": [
+            {
+              "destinationDir": ".m2",
+              "configMap": {
+                "name": "settings-mvn"
+              }
+            }
+          ]
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "${IMAGE_STREAM_NAMESPACE}",
+              "name": "fis-java-openshift:${BUILDER_VERSION}"
+            },
+            "forcePull": true,
+            "incremental": true,
+            "env": [
+              {
+                "name": "TZ",
+                "value": "America/Fortaleza"
+              },
+              {
+                "name": "BUILD_LOGLEVEL",
+                "value": "5"
+              },
+              {
+                "name": "MAVEN_ARGS",
+                "value": "${MAVEN_ARGS}"
+              },
+              {
+                "name": "MAVEN_ARGS_APPEND",
+                "value": "${MAVEN_ARGS_APPEND}"
+              }
+            ]
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${APP_NAME}:latest"
+          }
+        },
+        "resources": {}
+      },
+      "status": {
+        "lastVersion": 0
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}",
+          "openshift.io/generated-by": "RedHatConsultingTeam"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${APP_NAME}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${APP_NAME}:latest"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "component": "${APP_NAME}",
+          "deploymentconfig": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "component": "${APP_NAME}",
+              "deploymentconfig": "${APP_NAME}",
+              "group": "vipro2",
+              "project": "${APP_NAME}",
+              "provider": "s2i",
+              "version": "${APP_VERSION}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${APP_NAME}",
+                "image": "library/${APP_NAME}:latest",
+                "readinessProbe" : {
+                  "httpGet" : {
+                    "path" : "/actuator/health",
+                    "port" : 8080
+                  },
+                  "initialDelaySeconds" : 90
+                },
+                "livenessProbe" : {
+                  "httpGet" : {
+                    "path" : "/actuator/health",
+                    "port" : 8080
+                  },
+                  "initialDelaySeconds" : 180
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP",
+                    "name": "http"
+                  },
+                  {
+                    "containerPort": 8778,
+                    "protocol": "TCP",
+                    "name": "jolokia"
+                  },
+                  {
+                    "containerPort": 9779,
+                    "protocol": "TCP",
+                    "name": "prometheus"
+                  }
+                ],
+                "env" : [
+                  {
+                    "name" : "TZ",
+                    "value" : "America/Fortaleza"
+                  },
+                  {
+                    "name" : "JAVA_OPTIONS",
+                    "value" : "-Dspring.profiles.active=openshift"
+                  },
+                  {
+                    "name" : "HTTP_PROXY",
+                    "value" : "${HTTP_PROXY}"
+                  },
+                  {
+                    "name" : "HTTPS_PROXY",
+                    "value" : "${HTTPS_PROXY}"
+                  },
+                  {
+                    "name" : "NO_PROXY",
+                    "value" : "${NO_PROXY}"
+                  },
+                  {
+                    "name" : "DB_USERNAME",
+                    "valueFrom" : {
+                      "secretKeyRef" : {
+                        "name" : "${DB_SECRET}",
+                        "key": "username"
+                      }
+                    }
+                  },
+                  {
+                    "name" : "DB_PASSWORD",
+                    "valueFrom" : {
+                      "secretKeyRef" : {
+                        "name" : "${DB_SECRET}",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "${CPU_REQUEST}",
+                    "memory": "${RAM_REQUEST}"
+                  },
+                  "limits": {
+                    "cpu": "${CPU_LIMIT}",
+                    "memory": "${RAM_LIMIT}"
+                  }
+                },
+                "volumeMounts":[
+                  {
+                    "name": "application-config",
+                    "mountPath": "/deployments/config",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "application-config",
+                "configMap": {
+                  "name": "${APP_NAME}",
+                  "items": [
+                    {
+                      "key": "application-openshift.properties",
+                      "path": "application-openshift.properties"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "latestVersion": 0,
+        "observedGeneration": 0,
+        "replicas": 0,
+        "updatedReplicas": 0,
+        "availableReplicas": 0,
+        "unavailableReplicas": 0
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "RedHatConsultingTeam"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "component": "${APP_NAME}",
+          "deploymentconfig": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        }
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}",
+          "deploymentconfig": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "RedHatConsultingTeam"
+        }
+      },
+      "spec": {
+        "to": {
+          "kind": "Service",
+          "name": "${APP_NAME}"
+        },
+        "selector": {
+          "component": "${APP_NAME}",
+          "deploymentconfig": "${APP_NAME}",
+          "group": "vipro2",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        }
+      }
+    }
+  ]
+}

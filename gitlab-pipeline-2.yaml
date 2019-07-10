@@ -3,19 +3,16 @@ kind: BuildConfig
 metadata:
   annotations:
     openshift.io/generated-by: OpenShiftNewApp
-    pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
-  creationTimestamp: '2019-07-08T16:52:26Z'
+    pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind":
+      "DeploymentConfig"}]'
+  creationTimestamp: null
   labels:
     app: cicd-pipeline
     group: cicd
     name: cicd-pipeline
     template: cicd
   name: gitlab-pipeline
-  namespace: citinova-devops-tools
-  resourceVersion: '16523706'
-  selfLink: >-
-    /apis/build.openshift.io/v1/namespaces/citinova-devops-tools/buildconfigs/gitlab-pipeline
-  uid: c40beb50-a1a0-11e9-b92f-005056b55c6a
+  selfLink: /apis/build.openshift.io/v1/namespaces/citinova-devops-tools/buildconfigs/gitlab-pipeline
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector: {}
@@ -28,14 +25,14 @@ spec:
   strategy:
     jenkinsPipelineStrategy:
       env:
-        - name: DEV_PROJECT
-          value: citinova-devops-app-dev
-        - name: STAGE_PROJECT
-          value: citinova-devops-app-hom
-        - name: ENABLE_QUAY
-          value: 'false'
-        - name: CREDENTIALS_ID
-          value: 'gitlabsecret'
+      - name: DEV_PROJECT
+        value: citinova-test-openshift-dev
+      - name: STAGE_PROJECT
+        value: citinova-test-openshift-hom
+      - name: ENABLE_QUAY
+        value: "false"
+      - name: CREDENTIALS_ID
+        value: gitlabsecret
       jenkinsfile: |-
         def mvnCmd = "mvn -s configuration/cicd-settings-nexus3.xml"
 
@@ -46,7 +43,7 @@ spec:
           stages {
             stage('Build App') {
               steps {
-                    git branch: 'eap-7', url: 'https://gitlab.com/citinovadev/test-openshift.git', credentialsId: 'gitlabsecret'
+                    git branch: 'master', url: 'https://gitlab.com/citinovadev/test-openshift.git', credentialsId: 'gitlabsecret'
                     sh "${mvnCmd} install -DskipTests=true"
               }
             }
@@ -70,11 +67,11 @@ spec:
             }
             stage('Build Image') {
               steps {
-                sh "cp target/openshift-tasks.war target/ROOT.war"
+                sh "cp target/teste1.war target/ROOT.war"
                 script {
                   openshift.withCluster() {
                     openshift.withProject(env.DEV_PROJECT) {
-                      openshift.selector("bc", "tasks").startBuild("--from-file=target/ROOT.war", "--wait=true")
+                      openshift.selector("bc", "teste1").startBuild("--from-file=target/ROOT.war", "--wait=true")
                     }
                   }
                 }
@@ -85,7 +82,7 @@ spec:
                 script {
                   openshift.withCluster() {
                     openshift.withProject(env.DEV_PROJECT) {
-                      openshift.selector("dc", "tasks").rollout().latest();
+                      openshift.selector("dc", "teste1").rollout().latest();
                     }
                   }
                 }
@@ -104,10 +101,10 @@ spec:
                   openshift.withCluster() {
                     if (env.ENABLE_QUAY.toBoolean()) {
                       withCredentials([usernamePassword(credentialsId: "${openshift.project()}-quay-cicd-secret", usernameVariable: "QUAY_USER", passwordVariable: "QUAY_PWD")]) {
-                        sh "skopeo copy docker://quay.io//tasks-app:latest docker://quay.io//tasks-app:stage --src-creds \"$QUAY_USER:$QUAY_PWD\" --dest-creds \"$QUAY_USER:$QUAY_PWD\" --src-tls-verify=false --dest-tls-verify=false"
+                        sh "skopeo copy docker://quay.io//teste1-app:latest docker://quay.io//teste1-app:stage --src-creds \"$QUAY_USER:$QUAY_PWD\" --dest-creds \"$QUAY_USER:$QUAY_PWD\" --src-tls-verify=false --dest-tls-verify=false"
                       }
                     } else {
-                      openshift.tag("${env.DEV_PROJECT}/tasks:latest", "${env.STAGE_PROJECT}/tasks:stage")
+                      openshift.tag("${env.DEV_PROJECT}/teste1:latest", "${env.STAGE_PROJECT}/teste1:stage")
                     }
                   }
                 }
@@ -118,7 +115,7 @@ spec:
                 script {
                   openshift.withCluster() {
                     openshift.withProject(env.STAGE_PROJECT) {
-                      openshift.selector("dc", "tasks").rollout().latest();
+                      openshift.selector("dc", "teste1").rollout().latest();
                     }
                   }
                 }
@@ -129,11 +126,11 @@ spec:
     type: JenkinsPipeline
   successfulBuildsHistoryLimit: 5
   triggers:
-    - github:
-        secret: WMsv6ndV
-      type: GitHub
-    - generic:
-        secret: WMsv6ndV
-      type: Generic
+  - github:
+      secret: WMsv6ndV
+    type: GitHub
+  - generic:
+      secret: WMsv6ndV
+    type: Generic
 status:
-  lastVersion: 26
+  lastVersion: 32

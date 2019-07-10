@@ -3,19 +3,16 @@ kind: BuildConfig
 metadata:
   annotations:
     openshift.io/generated-by: OpenShiftNewApp
-    pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
-  creationTimestamp: '2019-07-08T16:52:26Z'
+    pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind":
+      "DeploymentConfig"}]'
+  creationTimestamp: null
   labels:
     app: cicd-pipeline
     group: cicd
     name: cicd-pipeline
     template: cicd
   name: gitlab-pipeline
-  namespace: citinova-devops-tools
-  resourceVersion: '16523706'
-  selfLink: >-
-    /apis/build.openshift.io/v1/namespaces/citinova-devops-tools/buildconfigs/gitlab-pipeline
-  uid: c40beb50-a1a0-11e9-b92f-005056b55c6a
+  selfLink: /apis/build.openshift.io/v1/namespaces/citinova-devops-tools/buildconfigs/gitlab-pipeline
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector: {}
@@ -28,14 +25,12 @@ spec:
   strategy:
     jenkinsPipelineStrategy:
       env:
-        - name: DEV_PROJECT
-          value: citinova-devops-app-dev
-        - name: STAGE_PROJECT
-          value: citinova-devops-app-hom
-        - name: ENABLE_QUAY
-          value: 'false'
-        - name: CREDENTIALS_ID
-          value: 'gitlabsecret'
+      - name: DEV_PROJECT
+        value: citinova-devops-app-dev
+      - name: STAGE_PROJECT
+        value: citinova-devops-app-hom
+      - name: ENABLE_QUAY
+        value: "false"
       jenkinsfile: |-
         def mvnCmd = "mvn -s configuration/cicd-settings-nexus3.xml"
 
@@ -46,8 +41,11 @@ spec:
           stages {
             stage('Build App') {
               steps {
-                    git branch: 'eap-7', url: 'https://gitlab.com/citinovadev/test-openshift.git', credentialsId: 'gitlabsecret'
+                   withCredentials([usernamePassword(credentialsId: "gitlabsecret", usernameVariable: "username", passwordVariable: "password")]) 
+                  {  
+                    git branch: 'eap-7', url: 'https://gitlab.com/citinovadev/test-openshift.git'
                     sh "${mvnCmd} install -DskipTests=true"
+                  }
               }
             }
             stage('Test') {
@@ -129,11 +127,11 @@ spec:
     type: JenkinsPipeline
   successfulBuildsHistoryLimit: 5
   triggers:
-    - github:
-        secret: WMsv6ndV
-      type: GitHub
-    - generic:
-        secret: WMsv6ndV
-      type: Generic
+  - github:
+      secret: WMsv6ndV
+    type: GitHub
+  - generic:
+      secret: WMsv6ndV
+    type: Generic
 status:
-  lastVersion: 26
+  lastVersion: 21
